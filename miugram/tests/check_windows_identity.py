@@ -30,3 +30,15 @@ for i in range(1, 5):
         assert size > 0 and offset + size <= len(data)
     assert {(16,16),(32,32),(48,48),(256,256)} <= sizes
 print('Windows identity and ICO static checks passed (runtime unverified).')
+# These are structural checks, not a replacement for testing Explorer/COM.
+import xml.etree.ElementTree as ET
+resource = ET.parse(root / 'Telegram/Resources/qrc/telegram/telegram.qrc')
+aliases = {e.get('alias') for e in resource.findall('.//file')}
+assert all(f'art/miugram-{i}.ico' in aliases for i in range(1, 5))
+win = text('Telegram/SourceFiles/platform/win/specific_win.cpp')
+settings = text('Telegram/SourceFiles/settings/sections/settings_main.cpp')
+assert 'bool Platform::SetMiugramShortcutIcon(int icon)' in win
+assert 'SLGP_RAWPATH' in win and 'Qt::CaseInsensitive' in win
+assert 'SetIconLocation' in win and 'SHCNE_UPDATEITEM' in win
+assert 'Platform::SetMiugramShortcutIcon(group->current())' in settings
+print('Desktop shortcut icon integration statically checked (Windows runtime unverified).')

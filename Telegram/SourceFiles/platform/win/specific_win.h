@@ -43,6 +43,11 @@ inline bool PreventsQuit(Core::QuitReason reason) {
 inline void ActivateThisProcess() {
 }
 
+// Desktop shortcut icon selection. Returns false when an existing shortcut
+// belongs to a different executable or Windows refuses the operation.
+[[nodiscard]] int MiugramShortcutIcon();
+[[nodiscard]] bool SetMiugramShortcutIcon(int icon);
+
 // 1 - secondary, 2 - primary.
 void SetWindowPriority(not_null<QWidget*> window, uint32 priority);
 

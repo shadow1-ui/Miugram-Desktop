@@ -30,6 +30,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/crash_reports.h"
 #include "core/version.h"
 
+#include <QtCore/QSaveFile>
+#include <QtCore/QSettings>
 #include <QtCore/QOperatingSystemVersion>
 #include <QtWidgets/QApplication>
 #include <QtGui/QDesktopServices>
@@ -234,6 +236,67 @@ bool ManageAppLink(
 }
 
 } // namespace
+
+int Platform::MiugramShortcutIcon() {
+	QSettings settings(QStringLiteral("Miugram"), QStringLiteral("Preferences"));
+	const auto value = settings.value(QStringLiteral("desktopShortcutIcon"), 1).toInt();
+	return (value >= 1 && value <= 4) ? value : 1;
+}
+
+bool Platform::SetMiugramShortcutIcon(int icon) {
+	if (icon < 1 || icon > 4 || cExeName().isEmpty()) return false;
+	const auto directory = cWorkingDir() + u"tdata/miugram/icons"_q;
+	if (!QDir().mkpath(directory)) return false;
+	QFile source(u":/gui/art/miugram-%1.ico"_q.arg(icon));
+	if (!source.open(QIODevice::ReadOnly)) return false;
+	const auto iconPath = directory + u"/miugram-%1.ico"_q.arg(icon);
+	QSaveFile target(iconPath);
+	const auto data = source.readAll();
+	if (data.isEmpty() || !target.open(QIODevice::WriteOnly)
+		|| target.write(data) != data.size() || !target.commit()) return false;
+
+	PWSTR folder = nullptr;
+	const auto result = SHGetKnownFolderPath(FOLDERID_Desktop, KF_FLAG_CREATE, nullptr, &folder);
+	if (!SUCCEEDED(result) || !folder) return false;
+	const auto freeFolder = gsl::finally([&] { CoTaskMemFree(folder); });
+	const auto shortcut = QDir::toNativeSeparators(
+		QString::fromWCharArray(folder) + u"/Miugram.lnk"_q);
+	const auto exe = QDir::toNativeSeparators(cExeDir() + cExeName());
+	const auto link = base::WinRT::TryCreateInstance<IShellLink>(CLSID_ShellLink);
+	if (!link) return false;
+	const auto persist = link.try_as<IPersistFile>();
+	if (!persist) return false;
+	const auto nativeShortcut = shortcut.toStdWString();
+	if (QFile::exists(shortcut)) {
+		if (!SUCCEEDED(persist->Load(nativeShortcut.c_str(), STGM_READWRITE))) return false;
+		WCHAR found[32768] = {};
+		if (!SUCCEEDED(link->GetPath(found, 32768, nullptr, SLGP_RAWPATH))) return false;
+		const auto actual = QDir::cleanPath(QString::fromWCharArray(found));
+		if (actual.compare(QDir::cleanPath(exe), Qt::CaseInsensitive) != 0) return false;
+	} else {
+		if (!SUCCEEDED(link->SetPath(exe.toStdWString().c_str()))) return false;
+		const auto working = QDir::toNativeSeparators(QDir(cWorkingDir()).absolutePath());
+		if (!SUCCEEDED(link->SetWorkingDirectory(working.toStdWString().c_str()))) return false;
+		if (const auto properties = link.try_as<IPropertyStore>()) {
+			PROPVARIANT value;
+			if (SUCCEEDED(InitPropVariantFromString(AppUserModelId::Id().c_str(), &value))) {
+				const auto written = properties->SetValue(AppUserModelId::Key(), value);
+				PropVariantClear(&value);
+				if (!SUCCEEDED(written) || !SUCCEEDED(properties->Commit())) return false;
+			}
+		}
+	}
+	const auto nativeIcon = QDir::toNativeSeparators(iconPath).toStdWString();
+	if (!SUCCEEDED(link->SetIconLocation(nativeIcon.c_str(), 0))
+		|| !SUCCEEDED(persist->Save(nativeShortcut.c_str(), TRUE))) return false;
+	if (Dlls::SHChangeNotify) {
+		Dlls::SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATHW, nativeShortcut.c_str(), nullptr);
+	}
+	QSettings settings(QStringLiteral("Miugram"), QStringLiteral("Preferences"));
+	settings.setValue(QStringLiteral("desktopShortcutIcon"), icon);
+	settings.sync();
+	return settings.status() == QSettings::NoError;
+}
 
 QString psAppDataPath() {
 	static const int maxFileLen = MAX_PATH * 10;

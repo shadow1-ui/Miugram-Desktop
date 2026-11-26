@@ -74,6 +74,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/widgets/menu/menu_add_action_callback.h"
 #include "ui/widgets/menu/menu_item_base.h"
 #include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
+#ifdef Q_OS_WIN
+#include "platform/win/specific_win.h"
+#endif
 #include "ui/widgets/continuous_sliders.h"
 #include "ui/widgets/popup_menu.h"
 #include "ui/wrap/slide_wrap.h"
@@ -411,6 +415,39 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		},
 		.keywords = { u"miugram"_q, u"ghost"_q, u"read"_q },
 	});
+
+#ifdef Q_OS_WIN
+	builder.addButton({
+		.id = u"main/miugram_shortcut_icon"_q,
+		.title = tr::lng_miugram_shortcut_icon(),
+		.icon = { &st::menuIconProfile },
+		.onClick = [=] {
+			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
+				box->setTitle(tr::lng_miugram_shortcut_icon());
+				const auto layout = box->verticalLayout();
+				const auto group = std::make_shared<Ui::RadioenumGroup<int>>(
+					Platform::MiugramShortcutIcon());
+				const auto add = [&](int value, const QString &label) {
+					layout->add(object_ptr<Ui::Radioenum<int>>(
+						layout, group, value, label, st::settingsSendType),
+						st::settingsSendTypePadding);
+				};
+				add(1, tr::lng_miugram_icon_plane(tr::now));
+				add(2, tr::lng_miugram_icon_sleep(tr::now));
+				add(3, tr::lng_miugram_icon_m(tr::now));
+				add(4, tr::lng_miugram_icon_envelope(tr::now));
+				box->addButton(tr::lng_settings_save(), [=] {
+					const auto ok = Platform::SetMiugramShortcutIcon(group->current());
+					box->closeBox();
+					controller->showToast(ok ? tr::lng_miugram_icon_saved(tr::now)
+						: tr::lng_miugram_icon_failed(tr::now));
+				});
+				box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+			}));
+		},
+		.keywords = { u"miugram"_q, u"icon"_q, u"shortcut"_q },
+	});
+#endif // Q_OS_WIN
 
 	if (!session->supportMode()) {
 		builder.addButton({

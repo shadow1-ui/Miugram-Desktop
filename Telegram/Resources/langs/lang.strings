@@ -9484,4 +9484,12 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_story_music_add_to_saved" = "Add to Saved Messages";
 "lng_story_music_add_to_profile" = "Add to Profile";
 
+"lng_miugram_shortcut_icon" = "Miugram desktop shortcut icon";
+"lng_miugram_icon_plane" = "Cat and paper plane";
+"lng_miugram_icon_sleep" = "Sleeping cat";
+"lng_miugram_icon_m" = "Cat-eared M";
+"lng_miugram_icon_envelope" = "Cat in envelope";
+"lng_miugram_icon_saved" = "Desktop shortcut icon updated. Windows may take time to refresh it.";
+"lng_miugram_icon_failed" = "Could not update the desktop shortcut. Check permissions and whether the existing shortcut points to Miugram.";
+
 // Keys finished

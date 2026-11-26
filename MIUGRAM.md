@@ -31,3 +31,7 @@ The `Miugram Windows debug build` workflow attempts the upstream Windows depende
 ## Experimental built-in Windows theme
 
 A selectable Miugram theme is included in Settings → Chat settings, alongside the upstream themes. It uses a graphite and muted-pink palette based on the upstream night theme. Core contrast and archive structure are checked statically; the theme, settings layout and accent picker have not yet been compiled or visually tested. It is not yet selected by default on first launch.
+
+## Experimental Windows desktop shortcut icon
+
+Settings offers all four supplied icon concepts for a desktop shortcut. Selecting one creates Miugram.lnk if absent or changes it only if the existing shortcut targets this executable. Icon files are stored in Miugram’s local working directory; Windows Explorer may cache the old image. The executable, taskbar, Start menu and already pinned shortcuts are not changed by this setting. This code has not been compiled or tested on Windows.
