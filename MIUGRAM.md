@@ -27,3 +27,7 @@ Telegram's API terms explicitly prohibit manipulating read statuses, including g
 ## Build verification
 
 The `Miugram Windows debug build` workflow attempts the upstream Windows dependency preparation and a debug compile with `TDESKTOP_API_TEST`. It publishes no executable and is not a release pipeline. A successful compile would not verify login, calls, notifications, data isolation, or runtime behavior. Separate application credentials, identity, packaging and Windows testing remain required.
+
+## Experimental built-in Windows theme
+
+A selectable Miugram theme is included in Settings → Chat settings, alongside the upstream themes. It uses a graphite and muted-pink palette based on the upstream night theme. Core contrast and archive structure are checked statically; the theme, settings layout and accent picker have not yet been compiled or visually tested. It is not yet selected by default on first launch.

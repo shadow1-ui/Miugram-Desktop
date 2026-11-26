@@ -24,7 +24,7 @@ namespace Window {
 namespace Theme {
 namespace {
 
-constexpr auto kMaxAccentColors = 4;
+constexpr auto kMaxAccentColors = 5;
 constexpr auto kDayBaseFile = ":/gui/day-custom-base.tdesktop-theme"_cs;
 constexpr auto kNightBaseFile = ":/gui/night-custom-base.tdesktop-theme"_cs;
 
@@ -237,6 +237,9 @@ style::colorizer ColorizerFrom(
 	case EmbeddedType::DayBlue:
 		result.lightnessMax = 160;
 		break;
+	case EmbeddedType::Miugram:
+		result.lightnessMin = 64;
+		break;
 	case EmbeddedType::Night:
 		result.keepContrast = base::flat_map<QLatin1String, Pair>{ {
 			//{ qstr("windowFgActive"), Pair{ cColor("5288c1"), cColor("17212b") } }, // windowBgActive
@@ -394,6 +397,17 @@ std::vector<EmbeddedScheme> EmbeddedThemes() {
 			":/gui/night-green.tdesktop-theme",
 			qColor("3fc1b0")
 		},
+		EmbeddedScheme{
+			EmbeddedType::Miugram,
+			qColor("242126"),
+			qColor("805665"),
+			qColor("302b30"),
+			qColor("bcb0b4"),
+			qColor("d6a3af"),
+			rpl::single(u"Miugram"_q),
+			":/gui/miugram.tdesktop-theme",
+			qColor("d6a3af")
+		},
 	};
 }
 
@@ -435,6 +449,8 @@ std::vector<QColor> DefaultAccentColors(EmbeddedType type) {
 			qColor("697b97"),
 			qColor("9b834b"),
 		};
+	case EmbeddedType::Miugram:
+		return { qColor("d6a3af"), qColor("b98299"), qColor("ca7896"), qColor("a58ed2") };
 	case EmbeddedType::NightGreen:
 		return {
 			qColor("60a8e7"),
@@ -751,6 +767,7 @@ bool AccentColors::setFromSerialized(const QByteArray &serialized) {
 		case EmbeddedType::DayBlue:
 		case EmbeddedType::Night:
 		case EmbeddedType::NightGreen:
+		case EmbeddedType::Miugram:
 			data.emplace(uncheckedType, color);
 			break;
 		default:
