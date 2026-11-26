@@ -1,0 +1,52 @@
+name: Miugram Windows debug build
+
+on:
+  push:
+    branches: ['miugram/bootstrap']
+    paths:
+      - '.github/workflows/miugram-windows-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-debug-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows-debug:
+    name: Compile upstream-derived Windows debug build (not a release)
+    runs-on: windows-latest
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          path: TBuild/tdesktop
+      - name: Prepare directories
+        run: |
+          if not exist "%GITHUB_WORKSPACE%\TBuild\Libraries" mkdir "%GITHUB_WORKSPACE%\TBuild\Libraries"
+          echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
+          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Set up Visual C++ tools
+        uses: Eden-CI/msvc-dev-cmd@master
+        with:
+          arch: x64
+          sdk: 10.0.26100.0
+          toolset: '14.44'
+      - name: Build third-party libraries
+        run: call "%TBUILD%\tdesktop\Telegram\build\prepare\win.bat" skip-release silent
+      - name: Configure and compile
+        run: |
+          cd /d "%TBUILD%\tdesktop\Telegram"
+          call configure.bat x64 -D TDESKTOP_API_TEST=ON -D CMAKE_CONFIGURATION_TYPES=Debug -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON
+          if errorlevel 1 exit /b 1
+          cmake --build ..\out --config Debug --parallel 2
+      # No artifact is published: test API configuration is not a release.

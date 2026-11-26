@@ -19,3 +19,7 @@ A cohesive dark graphite and muted pink design; fast, consistent animations; a d
 The requested option to retain locally received messages deleted by others must be clearly marked, safely stored and deletable. It cannot recover messages never received and must not bypass self-destructing or protected content.
 
 The requested read-receipt suppression mode is not implemented. Telegram's API terms explicitly prohibit manipulating read statuses, including ghost mode; violation can result in loss of API access. Other sessions and queued actions can also affect read status. See https://core.telegram.org/api/terms.
+
+## Build verification
+
+The `Miugram Windows debug build` workflow attempts the upstream Windows dependency preparation and a debug compile with `TDESKTOP_API_TEST`. It publishes no executable and is not a release pipeline. A successful compile would not verify login, calls, notifications, data isolation, or runtime behavior. Separate application credentials, identity, packaging and Windows testing remain required.
