@@ -35,3 +35,5 @@ A selectable Miugram theme is included in Settings → Chat settings, alongside 
 ## Experimental Windows desktop shortcut icon
 
 Settings offers all four supplied icon concepts for a desktop shortcut. Selecting one creates Miugram.lnk if absent or changes it only if the existing shortcut targets this executable. Icon files are stored in Miugram’s local working directory; Windows Explorer may cache the old image. The executable, taskbar, Start menu and already pinned shortcuts are not changed by this setting. This code has not been compiled or tested on Windows.
+
+The debug CI workflow reads the Telegram API ID and hash from GitHub Actions secrets, instead of upstream test credentials. This does not prove that login works or make the build a release. The API hash is embedded in the executable and is extractable from it.
