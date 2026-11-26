@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: windows-debug-${{ github.ref }}
+  group: windows-debug-latest-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
