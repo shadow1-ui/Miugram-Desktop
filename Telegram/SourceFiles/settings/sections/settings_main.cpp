@@ -6,6 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "miugram/ghost_settings.h"
+#include "miugram/profile_background.h"
+#include "editor/photo_editor_common.h"
+#include "editor/photo_editor_layer_widget.h"
 #include "settings/sections/settings_main.h"
 
 #include "api/api_cloud_password.h"
@@ -446,6 +449,47 @@ void BuildSectionButtons(SectionBuilder &builder) {
 			}));
 		},
 		.keywords = { u"miugram"_q, u"icon"_q, u"shortcut"_q },
+	});
+#endif // Q_OS_WIN
+
+#ifdef Q_OS_WIN
+	builder.addButton({
+		.id = u"main/miugram_profile_background"_q,
+		.title = tr::lng_miugram_profile_background(),
+		.icon = { &st::menuIconProfile },
+		.onClick = [=] {
+			const auto account = session->userId().bare;
+			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
+				box->setTitle(tr::lng_miugram_profile_background());
+				box->addButton(tr::lng_miugram_background_choose(), [=] {
+					box->closeBox();
+					Editor::PrepareProfilePhotoFromFile(
+						controller->widget(), &controller->window(),
+						Editor::EditorData{
+							.confirm = tr::lng_settings_save(tr::now),
+							.cropType = Editor::EditorData::CropType::Rect,
+							.keepAspectRatio = false,
+						},
+						crl::guard(controller, [=](QImage &&image) {
+							controller->showToast(Miugram::SaveProfileBackground(account, std::move(image))
+								? tr::lng_miugram_background_saved(tr::now)
+								: tr::lng_miugram_background_failed(tr::now));
+						}));
+				});
+				box->addButton(tr::lng_miugram_background_preview(), [=] {
+					box->closeBox();
+					controller->showSection(Info::Stories::MakeMyProfile(session->user()));
+				});
+				box->addButton(tr::lng_miugram_background_remove(), [=] {
+					const auto ok = Miugram::RemoveProfileBackground(account);
+					box->closeBox();
+					controller->showToast(ok ? tr::lng_miugram_background_removed(tr::now)
+						: tr::lng_miugram_background_failed(tr::now));
+				});
+				box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+			}));
+		},
+		.keywords = { u"miugram"_q, u"profile"_q, u"background"_q },
 	});
 #endif // Q_OS_WIN
 

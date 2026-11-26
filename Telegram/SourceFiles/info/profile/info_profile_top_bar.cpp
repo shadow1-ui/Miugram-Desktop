@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_top_bar.h"
+#include "miugram/profile_background.h"
 
 #include "api/api_peer_colors.h"
 #include "api/api_peer_photo.h"
@@ -485,6 +486,9 @@ TopBar::TopBar(
 }())
 , _backToggles(std::move(descriptor.backToggles)) {
 	setObjectName(u"profileTopBar"_q);
+	if (_peer->isSelf() && !_savedMessages) {
+		_miugramBackground = Miugram::LoadProfileBackground(_peer->session().userId().bare);
+	}
 	_peer->updateFull();
 	_communityEffect = (_source == Source::Community);
 	if (const auto broadcast = _peer->monoforumBroadcast()) {
@@ -3120,6 +3124,30 @@ void TopBar::paintEvent(QPaintEvent *e) {
 		} else {
 			p.drawImage(x, y, _cachedGradient);
 		}
+	}
+	if (!_miugramBackground.isNull() && width() > 0 && height() > 0) {
+		// Use a center crop; blend with the existing surface so labels remain legible.
+		const auto ratio = float64(width()) / height();
+		const auto imageRatio = float64(_miugramBackground.width()) / _miugramBackground.height();
+		auto source = QRectF(_miugramBackground.rect());
+		if (imageRatio > ratio) {
+			const auto w = source.height() * ratio;
+			source.setLeft((source.width() - w) / 2.);
+			source.setWidth(w);
+		} else {
+			const auto h = source.width() / ratio;
+			source.setTop((source.height() - h) / 2.);
+			source.setHeight(h);
+		}
+		p.save();
+		if (_roundEdges) {
+			QPainterPath clip;
+			clip.addRoundedRect(rect() + QMargins{ 0, 0, 0, st::boxRadius + 1 }, st::boxRadius, st::boxRadius);
+			p.setClipPath(clip, Qt::IntersectClip);
+		}
+		p.setOpacity(0.28);
+		p.drawImage(QRectF(rect()), _miugramBackground, source);
+		p.restore();
 	}
 	if (_patternEmoji && _patternEmoji->ready()) {
 		paintAnimatedPattern(p, clipBounds, geometry);

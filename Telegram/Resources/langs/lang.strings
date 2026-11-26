@@ -9492,4 +9492,12 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_miugram_icon_saved" = "Desktop shortcut icon updated. Windows may take time to refresh it.";
 "lng_miugram_icon_failed" = "Could not update the desktop shortcut. Check permissions and whether the existing shortcut points to Miugram.";
 
+"lng_miugram_profile_background" = "Local profile background";
+"lng_miugram_background_choose" = "Choose image";
+"lng_miugram_background_preview" = "Preview profile";
+"lng_miugram_background_remove" = "Remove";
+"lng_miugram_background_saved" = "Background saved locally. Open your profile to preview.";
+"lng_miugram_background_removed" = "Local background removed.";
+"lng_miugram_background_failed" = "Could not update the local background.";
+
 // Keys finished

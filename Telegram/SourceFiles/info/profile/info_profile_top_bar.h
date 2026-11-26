@@ -16,6 +16,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/effects/animations.h"
 #include "ui/rp_widget.h"
 #include "ui/userpic_view.h"
+#include <QtGui/QImage>
 
 namespace Api {
 class Boosts;
@@ -273,6 +274,7 @@ private:
 	[[nodiscard]] auto effectiveCollectible()
 	const -> std::shared_ptr<Data::EmojiStatusCollectible>;
 
+	QImage _miugramBackground;
 	const not_null<PeerData*> _peer;
 	Data::ForumTopic *_topic = nullptr;
 	const Key _key;
