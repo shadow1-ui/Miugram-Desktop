@@ -5538,6 +5538,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_toast_sent_rate_transcription" = "Thank you for your feedback!";
 
 "lng_context_copy_link" = "Copy Link";
+"lng_miugram_copy_id_link" = "Copy ID Link (may not open for everyone)";
+"lng_miugram_id_link_copied" = "ID link copied. Access depends on Telegram privacy and whether the recipient knows this user.";
 "lng_context_copy_message_link" = "Copy Message Link";
 "lng_context_copy_post_link" = "Copy Post Link";
 "lng_context_copy_topic_link" = "Copy Topic Link";

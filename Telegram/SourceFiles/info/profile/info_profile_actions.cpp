@@ -1681,6 +1681,17 @@ BlockPart DetailsFiller::makeInfo() {
 					FastShareLink(strong, link);
 				}
 			});
+		if (const auto user = _peer->asUser()) {
+			const auto idLink = u"tg://user?id=%1"_q.arg(peerToUser(user->id).bare);
+			request.menu->addAction(
+				tr::lng_miugram_copy_id_link(tr::now),
+				[=] {
+					TextUtilities::SetClipboardText({ idLink });
+					if (const auto strong = weak.get()) {
+						strong->showToast(tr::lng_miugram_id_link_copied(tr::now));
+					}
+				});
+		}
 	};
 	if (const auto user = _peer->asUser()) {
 		if (user->session().supportMode()) {
