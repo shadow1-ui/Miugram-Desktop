@@ -10,7 +10,7 @@ Miugram is an unofficial Telegram client based on the official upstream source. 
 
 ## Current status
 
-Upstream source and initial project assets only; Miugram features are not implemented yet. No tested Miugram builds or downloadable releases are available. The existing Telegram application name, package/signing identity, API credentials, and branding still need to be replaced before distribution. Never commit credentials or signing keys. Follow the upstream build instructions and supply your own Telegram API ID and hash.
+A first Miugram entry in Desktop settings displays the current account ID and current DC when available. It is unbuilt and untested on Windows. No tested Miugram builds or downloadable releases are available. The existing Telegram application name, package/signing identity, API credentials, and branding still need to be replaced before distribution. Never commit credentials or signing keys. Follow the upstream build instructions and supply your own Telegram API ID and hash.
 
 ## Planned features
 

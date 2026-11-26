@@ -365,6 +365,25 @@ void BuildSectionButtons(SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	const auto showOther = builder.showOther();
 
+	builder.addButton({
+		.id = u"main/miugram"_q,
+		.title = rpl::single(u"Miugram"_q),
+		.icon = { &st::menuIconProfile },
+		.onClick = [=] {
+			const auto id = session->userId().bare;
+			const auto dc = session->mainDcId();
+			const auto idText = id ? QString::number(qulonglong(id)) : u"—"_q;
+			const auto dcText = (dc > 0)
+				? u"DC%1"_q.arg(dc)
+				: u"—"_q;
+			controller->show(Ui::MakeInformBox({
+				.text = rpl::single(u"ID: %1\nDC: %2"_q.arg(idText, dcText)),
+				.title = rpl::single(u"Miugram"_q),
+			}));
+		},
+		.keywords = { u"miugram"_q, u"id"_q, u"dc"_q },
+	});
+
 	if (!session->supportMode()) {
 		builder.addButton({
 			.title = tr::lng_settings_my_account(),
