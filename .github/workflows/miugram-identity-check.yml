@@ -14,6 +14,7 @@ jobs:
       - run: python3 miugram/tests/check_windows_identity.py
       - run: python3 miugram/tests/check_theme.py
       - run: python3 miugram/tests/check_profile_background.py
+      - run: python3 miugram/tests/check_message_checks.py
       - name: Test ghost policy state combinations
         run: |
           g++ -std=c++17 -I. miugram/tests/ghost_policy_test.cpp -o /tmp/miugram-ghost-test

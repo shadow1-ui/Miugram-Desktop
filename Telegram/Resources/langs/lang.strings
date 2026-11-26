@@ -9500,4 +9500,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_miugram_background_removed" = "Local background removed.";
 "lng_miugram_background_failed" = "Could not update the local background.";
 
+"lng_miugram_checks" = "Message check style";
+"lng_miugram_checks_classic" = "Classic";
+"lng_miugram_checks_rounded" = "Rounded";
+"lng_miugram_checks_saved" = "Saved. Restart Miugram to apply everywhere.";
+"lng_miugram_checks_failed" = "Could not save message check style.";
+
 // Keys finished

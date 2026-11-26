@@ -89,6 +89,10 @@ historySentSelectedIcon: icon {{ "history_sent", historyOutIconFgSelected, point
 historySentInvertedIcon: icon {{ "history_sent", historyIconFgInverted, point(2px, 4px) }};
 historyReceivedSelectedIcon: icon {{ "history_received", historyOutIconFgSelected, point(2px, 4px) }};
 historyReceivedInvertedIcon: icon {{ "history_received", historyIconFgInverted, point(2px, 4px) }};
+miugramSentRoundedSelectedIcon: icon {{ "miugram_sent_round", historyOutIconFgSelected, point(2px, 4px) }};
+miugramSentRoundedInvertedIcon: icon {{ "miugram_sent_round", historyIconFgInverted, point(2px, 4px) }};
+miugramReceivedRoundedSelectedIcon: icon {{ "miugram_received_round", historyOutIconFgSelected, point(2px, 4px) }};
+miugramReceivedRoundedInvertedIcon: icon {{ "miugram_received_round", historyIconFgInverted, point(2px, 4px) }};
 historyViewsInIcon: icon {{ "history_views", msgInDateFg }};
 historyViewsInSelectedIcon: icon {{ "history_views", msgInDateFgSelected }};
 historyViewsOutIcon: icon {{ "history_views", historyOutIconFg }};
@@ -213,6 +217,8 @@ historyFileThumbCancelSelected: icon {{ "history_file_cancel", historyFileThumbI
 historyFileThumbPlay: icon {{ "history_file_play", historyFileThumbIconFg }};
 historySentIcon: icon {{ "history_sent", historyOutIconFg, point(2px, 4px) }};
 historyReceivedIcon: icon {{ "history_received", historyOutIconFg, point(2px, 4px) }};
+miugramSentRoundedIcon: icon {{ "miugram_sent_round", historyOutIconFg, point(2px, 4px) }};
+miugramReceivedRoundedIcon: icon {{ "miugram_received_round", historyOutIconFg, point(2px, 4px) }};
 historyBubbleTailInLeft: icon {{ "bubble_tail", msgInBg }};
 historyBubbleTailOutLeft: icon {{ "bubble_tail", msgOutBg }};
 historyBubbleTailInRight: icon {{ "bubble_tail-flip_horizontal", msgInBg }};

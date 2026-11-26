@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/chat_style.h"
+#include "miugram/check_style.h"
 
 #include "ui/chat/chat_theme.h"
 #include "ui/chat/chat_theme_readability.h"
@@ -231,8 +232,9 @@ ChatStyle::ChatStyle(rpl::producer<ColorIndicesCompressed> colorIndices) {
 	make(_historyEphemeralInvertedIcon, st::historyEphemeralInvertedIcon);
 	make(_historySendingIcon, st::historySendingIcon);
 	make(_historySendingInvertedIcon, st::historySendingInvertedIcon);
-	make(_historySentInvertedIcon, st::historySentInvertedIcon);
-	make(_historyReceivedInvertedIcon, st::historyReceivedInvertedIcon);
+	const auto miugramRoundedChecks = Miugram::CheckStyle() == 1;
+	make(_historySentInvertedIcon, miugramRoundedChecks ? st::miugramSentRoundedInvertedIcon : st::historySentInvertedIcon);
+	make(_historyReceivedInvertedIcon, miugramRoundedChecks ? st::miugramReceivedRoundedInvertedIcon : st::historyReceivedInvertedIcon);
 	make(_msgBotKbUrlIcon, st::msgBotKbUrlIcon);
 	make(_msgBotKbPaymentIcon, st::msgBotKbPaymentIcon);
 	make(_msgBotKbSwitchPmIcon, st::msgBotKbSwitchPmIcon);
@@ -397,16 +399,16 @@ ChatStyle::ChatStyle(rpl::producer<ColorIndicesCompressed> colorIndices) {
 		st::historySilentOutSelectedIcon);
 	make(
 		&MessageStyle::historySentIcon,
-		st::historySentIcon,
-		st::historySentSelectedIcon,
-		st::historySentIcon,
-		st::historySentSelectedIcon);
+		miugramRoundedChecks ? st::miugramSentRoundedIcon : st::historySentIcon,
+		miugramRoundedChecks ? st::miugramSentRoundedSelectedIcon : st::historySentSelectedIcon,
+		miugramRoundedChecks ? st::miugramSentRoundedIcon : st::historySentIcon,
+		miugramRoundedChecks ? st::miugramSentRoundedSelectedIcon : st::historySentSelectedIcon);
 	make(
 		&MessageStyle::historyReceivedIcon,
-		st::historyReceivedIcon,
-		st::historyReceivedSelectedIcon,
-		st::historyReceivedIcon,
-		st::historyReceivedSelectedIcon);
+		miugramRoundedChecks ? st::miugramReceivedRoundedIcon : st::historyReceivedIcon,
+		miugramRoundedChecks ? st::miugramReceivedRoundedSelectedIcon : st::historyReceivedSelectedIcon,
+		miugramRoundedChecks ? st::miugramReceivedRoundedIcon : st::historyReceivedIcon,
+		miugramRoundedChecks ? st::miugramReceivedRoundedSelectedIcon : st::historyReceivedSelectedIcon);
 	make(
 		&MessageStyle::historyPsaIcon,
 		st::historyPsaIconIn,

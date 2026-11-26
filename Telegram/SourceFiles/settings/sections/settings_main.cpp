@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "miugram/ghost_settings.h"
+#include "miugram/check_style.h"
 #include "miugram/profile_background.h"
 #include "editor/photo_editor_common.h"
 #include "editor/photo_editor_layer_widget.h"
@@ -417,6 +418,29 @@ void BuildSectionButtons(SectionBuilder &builder) {
 			}));
 		},
 		.keywords = { u"miugram"_q, u"ghost"_q, u"read"_q },
+	});
+
+
+	builder.addButton({
+		.id = u"main/miugram_checks"_q,
+		.title = tr::lng_miugram_checks(),
+		.icon = { &st::menuIconProfile },
+		.onClick = [=] {
+			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
+				box->setTitle(tr::lng_miugram_checks());
+				const auto layout = box->verticalLayout();
+				const auto group = std::make_shared<Ui::RadioenumGroup<int>>(Miugram::CheckStyle());
+				layout->add(object_ptr<Ui::Radioenum<int>>(layout, group, 0, tr::lng_miugram_checks_classic(tr::now), st::settingsSendType), st::settingsSendTypePadding);
+				layout->add(object_ptr<Ui::Radioenum<int>>(layout, group, 1, tr::lng_miugram_checks_rounded(tr::now), st::settingsSendType), st::settingsSendTypePadding);
+				box->addButton(tr::lng_settings_save(), [=] {
+					const auto ok = Miugram::SetCheckStyle(group->current());
+					box->closeBox();
+					controller->showToast(ok ? tr::lng_miugram_checks_saved(tr::now) : tr::lng_miugram_checks_failed(tr::now));
+				});
+				box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+			}));
+		},
+		.keywords = { u"miugram"_q, u"checks"_q, u"appearance"_q },
 	});
 
 #ifdef Q_OS_WIN
