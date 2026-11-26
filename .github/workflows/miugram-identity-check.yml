@@ -12,3 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 miugram/tests/check_windows_identity.py
+      - name: Test ghost policy state combinations
+        run: |
+          g++ -std=c++17 -I. miugram/tests/ghost_policy_test.cpp -o /tmp/miugram-ghost-test
+          /tmp/miugram-ghost-test

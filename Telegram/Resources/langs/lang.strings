@@ -5540,6 +5540,13 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_context_copy_link" = "Copy Link";
 "lng_miugram_copy_id_link" = "Copy ID Link (may not open for everyone)";
 "lng_miugram_id_link_copied" = "ID link copied. Access depends on Telegram privacy and whether the recipient knows this user.";
+"lng_miugram_ghost" = "Ghost Mode (Experimental)";
+"lng_miugram_ghost_enable" = "Enable Ghost Mode";
+"lng_miugram_ghost_disable" = "Disable Ghost Mode";
+"lng_miugram_ghost_description" = "Suppress ordinary chat read requests for this account. Stories, expiring media and other sessions are not covered. Previously sent or queued actions can still change read status. This experimental mode does not guarantee invisibility.";
+"lng_miugram_ghost_enabled" = "Ghost mode enabled (experimental).";
+"lng_miugram_ghost_disabled" = "Ghost mode disabled.";
+"lng_miugram_ghost_save_failed" = "Could not save ghost mode setting.";
 "lng_context_copy_message_link" = "Copy Message Link";
 "lng_context_copy_post_link" = "Copy Post Link";
 "lng_context_copy_topic_link" = "Copy Topic Link";

@@ -5,6 +5,7 @@ the official desktop application for the Telegram messaging service.
 For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
+#include "miugram/ghost_settings.h"
 #include "data/data_replies_list.h"
 
 #include "apiwrap.h"
@@ -927,6 +928,7 @@ void RepliesList::readTill(MsgId tillId) {
 void RepliesList::readTill(
 		MsgId tillId,
 		HistoryItem *tillIdItem) {
+	if (Miugram::GhostEnabled(_history->session().userId().bare)) return;
 	if (!IsServerMsgId(tillId)) {
 		return;
 	}
@@ -965,6 +967,10 @@ void RepliesList::readTill(
 }
 
 void RepliesList::sendReadTillRequest() {
+	if (Miugram::GhostEnabled(_history->session().userId().bare)) {
+		_readRequestTimer.cancel();
+		return;
+	}
 	if (_readRequestTimer.isActive()) {
 		_readRequestTimer.cancel();
 	}

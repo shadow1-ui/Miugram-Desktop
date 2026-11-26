@@ -5,6 +5,7 @@ the official desktop application for the Telegram messaging service.
 For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
+#include "miugram/ghost_settings.h"
 #include "data/data_histories.h"
 
 #include "api/api_text_entities.h"
@@ -262,6 +263,7 @@ void Histories::readInboxTill(
 		MsgId tillId,
 		bool force) {
 	Expects(IsServerMsgId(tillId) || (!tillId && !force));
+	if (Miugram::GhostEnabled(session().userId().bare)) return;
 
 	DEBUG_LOG(("Reading: readInboxTill %1, force %2."
 		).arg(tillId.bare
@@ -748,6 +750,12 @@ void Histories::sendReadRequests() {
 
 void Histories::sendReadRequest(not_null<History*> history, State &state) {
 	Expects(state.willReadTill > state.sentReadTill);
+	// A previously scheduled read must not be sent while ghost mode is on.
+	if (Miugram::GhostEnabled(session().userId().bare)) {
+		state.willReadTill = 0;
+		state.willReadWhen = 0;
+		return;
+	}
 
 	const auto tillId = state.sentReadTill = base::take(state.willReadTill);
 	state.willReadWhen = 0;

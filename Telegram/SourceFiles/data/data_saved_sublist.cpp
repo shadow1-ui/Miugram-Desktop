@@ -5,6 +5,7 @@ the official desktop application for the Telegram messaging service.
 For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
+#include "miugram/ghost_settings.h"
 #include "data/data_saved_sublist.h"
 
 #include "api/api_unread_things.h"
@@ -612,6 +613,7 @@ void SavedSublist::readTill(MsgId tillId) {
 void SavedSublist::readTill(
 		MsgId tillId,
 		HistoryItem *tillIdItem) {
+	if (Miugram::GhostEnabled(_parent->session().userId().bare)) return;
 	if (!IsServerMsgId(tillId)) {
 		return;
 	}
@@ -646,6 +648,10 @@ void SavedSublist::readTill(
 }
 
 void SavedSublist::sendReadTillRequest() {
+	if (Miugram::GhostEnabled(_parent->session().userId().bare)) {
+		_readRequestTimer.cancel();
+		return;
+	}
 	const auto parentChat = _parent->parentChat();
 	if (!parentChat) {
 		return;

@@ -5,6 +5,8 @@ the official desktop application for the Telegram messaging service.
 For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
+#include "miugram/ghost_settings.h"
+#include "miugram/ghost_policy.h"
 #include "apiwrap.h"
 
 #include "api/api_attached_stickers.h"
@@ -1491,6 +1493,9 @@ void ApiWrap::markContentsRead(
 		QVector<MTPint>>();
 	markedIds.reserve(items.size());
 	for (const auto &item : items) {
+		const auto media = item->media();
+		const auto expiring = (media && media->ttlSeconds()) || item->ttlDestroyAt();
+		if (Miugram::SuppressRead(Miugram::GhostEnabled(_session->userId().bare), expiring)) continue;
 		if (!item->markContentsRead(true) || !item->isRegular()) {
 			continue;
 		}
@@ -1516,6 +1521,9 @@ void ApiWrap::markContentsRead(
 }
 
 void ApiWrap::markContentsRead(not_null<HistoryItem*> item) {
+	const auto media = item->media();
+	const auto expiring = (media && media->ttlSeconds()) || item->ttlDestroyAt();
+	if (Miugram::SuppressRead(Miugram::GhostEnabled(_session->userId().bare), expiring)) return;
 	if (!item->markContentsRead(true) || !item->isRegular()) {
 		return;
 	}

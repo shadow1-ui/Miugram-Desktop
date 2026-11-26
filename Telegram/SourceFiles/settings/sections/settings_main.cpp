@@ -5,6 +5,7 @@ the official desktop application for the Telegram messaging service.
 For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
+#include "miugram/ghost_settings.h"
 #include "settings/sections/settings_main.h"
 
 #include "api/api_cloud_password.h"
@@ -382,6 +383,33 @@ void BuildSectionButtons(SectionBuilder &builder) {
 			}));
 		},
 		.keywords = { u"miugram"_q, u"id"_q, u"dc"_q },
+	});
+
+	builder.addButton({
+		.id = u"main/miugram_ghost"_q,
+		.title = tr::lng_miugram_ghost(),
+		.icon = { &st::menuIconLock },
+		.onClick = [=] {
+			const auto account = session->userId().bare;
+			const auto enabled = Miugram::GhostEnabled(account);
+			controller->show(Ui::MakeConfirmBox({
+				.text = tr::lng_miugram_ghost_description(),
+				.confirmed = [=](Fn<void()> close) {
+					if (Miugram::SetGhostEnabled(account, !enabled)) {
+						controller->showToast(enabled
+							? tr::lng_miugram_ghost_disabled(tr::now)
+							: tr::lng_miugram_ghost_enabled(tr::now));
+					} else {
+						controller->showToast(tr::lng_miugram_ghost_save_failed(tr::now));
+					}
+					close();
+				},
+				.confirmText = enabled
+					? tr::lng_miugram_ghost_disable()
+					: tr::lng_miugram_ghost_enable(),
+			}));
+		},
+		.keywords = { u"miugram"_q, u"ghost"_q, u"read"_q },
 	});
 
 	if (!session->supportMode()) {

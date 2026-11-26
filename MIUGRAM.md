@@ -18,7 +18,11 @@ A cohesive dark graphite and muted pink design; fast, consistent animations; a d
 
 The requested option to retain locally received messages deleted by others must be clearly marked, safely stored and deletable. It cannot recover messages never received and must not bypass self-destructing or protected content.
 
-The requested read-receipt suppression mode is not implemented. Telegram's API terms explicitly prohibit manipulating read statuses, including ghost mode; violation can result in loss of API access. Other sessions and queued actions can also affect read status. See https://core.telegram.org/api/terms.
+## Experimental ghost mode (Desktop, not yet tested)
+
+A local per-account opt-in attempts to suppress ordinary history, discussion and saved-history reads, ordinary content reads, and explicit mark-all mentions/reactions. Queued history, discussion and saved-history requests are checked again at send time. Expiring media content reads are not suppressed. Stories, typing/online status, outgoing messages, other sessions and already-sent requests are not covered. Local unread badges can remain visible. This is not a guarantee of invisibility. Real two-account network tests, including timers, toggles and queue races, are required before release; the code is not yet compiled or tested on Windows.
+
+Telegram's API terms explicitly prohibit manipulating read statuses, including ghost mode; violation can result in loss of API access. See https://core.telegram.org/api/terms.
 
 ## Build verification
 
