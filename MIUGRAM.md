@@ -6,11 +6,11 @@ Miugram is an unofficial Telegram client based on the official upstream source. 
 
 - Upstream: https://github.com/telegramdesktop/tdesktop
 - Initial commit: `1fdd0ea143accc8b5d917e95144cfc5f73e06395`
-- Project assets in `miugram/assets/logos`: the four supplied concepts and original composite. They are references, not yet production-ready icon resources; cat and paper plane is the intended default.
+- Project assets in `miugram/assets/logos`: the four supplied concepts and original composite. Four multi-resolution Windows ICO resources have been generated from the supplied concepts; cat and paper plane is the default executable icon. The other three are not yet selectable.
 
 ## Current status
 
-A first Miugram entry in Desktop settings displays the current account ID and current DC when available. It is unbuilt and untested on Windows. No tested Miugram builds or downloadable releases are available. The existing Telegram application name, package/signing identity, API credentials, and branding still need to be replaced before distribution. Never commit credentials or signing keys. Follow the upstream build instructions and supply your own Telegram API ID and hash.
+A first Miugram entry in Desktop settings displays the current account ID and current DC when available. It is unbuilt and untested on Windows. No tested Miugram builds or downloadable releases are available. The Windows executable, app-data name, shortcut name, notification identifiers and default executable icon have been changed for Miugram, and the upstream auto-updater is disabled by default. These changes are untested on Windows and do not establish complete data isolation. The installer, signing identity, API credentials, and remaining branding need work before distribution. Do not use the upstream installer to distribute Miugram. Never commit credentials or signing keys. Follow the upstream build instructions and supply your own Telegram API ID and hash.
 
 ## Planned features
 

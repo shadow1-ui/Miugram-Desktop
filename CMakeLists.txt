@@ -19,7 +19,7 @@ endif()
 project(Telegram
     LANGUAGES C CXX
     VERSION ${desktop_app_version_cmake}
-    DESCRIPTION "Official Telegram Desktop messenger"
+    DESCRIPTION "Miugram, an unofficial Telegram client"
     HOMEPAGE_URL "https://desktop.telegram.org"
 )
 
@@ -53,6 +53,9 @@ include(cmake/generate_target.cmake)
 include(cmake/nuget.cmake)
 include(cmake/validate_d3d_compiler.cmake)
 include(cmake/target_prepare_qrc.cmake)
+
+# Never install official Telegram updates into a Miugram build.
+set(DESKTOP_APP_DISABLE_AUTOUPDATE ON CACHE BOOL "Disable upstream auto-update")
 
 include(cmake/options.cmake)
 

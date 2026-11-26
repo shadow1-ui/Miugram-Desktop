@@ -1,0 +1,14 @@
+name: Miugram Windows identity static checks
+on:
+  push:
+    branches: ['miugram/bootstrap']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 miugram/tests/check_windows_identity.py

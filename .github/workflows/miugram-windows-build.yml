@@ -5,6 +5,8 @@ on:
     branches: ['miugram/bootstrap']
     paths:
       - '.github/workflows/miugram-windows-build.yml'
+      - 'CMakeLists.txt'
+      - 'Telegram/**'
   workflow_dispatch:
 
 permissions:
