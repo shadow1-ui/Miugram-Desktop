@@ -1,0 +1,20 @@
+name: Miugram Windows archive codec test
+on:
+  push:
+    branches: ['miugram/bootstrap']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dpapi:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Test Windows user-bound encryption
+        shell: cmd
+        run: |
+          cl /nologo /EHsc /std:c++17 /I. miugram\tests\archive_dpapi_test.cpp crypt32.lib /Fe:archive-dpapi-test.exe
+          archive-dpapi-test.exe
