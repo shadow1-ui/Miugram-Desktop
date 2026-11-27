@@ -47,3 +47,7 @@ On Windows, Settings offers a local image picker and manual crop, profile previe
 A local appearance setting selects classic or rounded message checks. The single and double check icons retain the upstream sending/read-state logic, including selected and inverted media rendering; restart Miugram to apply consistently. Resource sizes and integration are checked statically, but the code compiled in Windows debug CI but has not been visually tested.
 
 Debug CI successfully compiled source commit `a20f51d7c923fd6dcaa7a0c7d9d798721a7017fb`: https://github.com/shadow1-ui/Miugram-Desktop/actions/runs/45899360306. No executable was published from that run; compilation is not a release or a runtime test.
+
+## Windows signing and candidate build
+
+A separate Miugram development signing certificate has been created; the private key is held outside the repository and also stored in GitHub Actions secrets. It is self-signed, not issued by a publicly trusted authority, so Windows will warn and it is not equivalent to a trusted code-signing certificate. Preserve a secure backup of the private key and password. A manually dispatched workflow builds and signs a testing candidate, checks the signer and signature status, and uploads a temporary artifact; it does not publish a release. The workflow, packaged output and application behavior still require verification before distribution.
