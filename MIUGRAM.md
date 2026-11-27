@@ -16,7 +16,7 @@ A first Miugram entry in Desktop settings displays the current account ID and cu
 
 A cohesive dark graphite and muted pink design; fast, consistent animations; a dedicated Miugram settings area; account ID and real current DC; user links with privacy limitations; configurable message status indicators; local profile background with cropping; and selectable app icons where supported. Implementations remain incomplete or require runtime verification. Custom interface icon design is deferred pending approval.
 
-The requested option to retain locally received messages deleted by others must be clearly marked, safely stored and deletable. It cannot recover messages never received and must not bypass self-destructing or protected content.
+The requested option to retain locally received messages deleted by others is **not implemented**. A Windows-user-bound DPAPI text-storage foundation and fail-closed policy have passed synthetic Windows tests, but no Telegram deletion capture, chat display, settings or logout cleanup is connected. Server deletion updates do not reliably identify who initiated a deletion. Only already-received content could ever be retained; self-destructing and protected content must be excluded.
 
 ## Experimental ghost mode (Desktop, not yet tested)
 
@@ -40,7 +40,7 @@ The debug CI workflow reads the Telegram API ID and hash from GitHub Actions sec
 
 ## Experimental local profile background
 
-On Windows, Settings offers a local image picker and manual crop, profile preview after saving, and removal. The image is saved as a per-account PNG under Miugram’s local data directory, not uploaded. The editor starts with an editable, locally selected visual-detail crop; this heuristic is not face or subject recognition. The profile header then center-crops and blends that image over its normal background. Previously opened profile views must be reopened to reflect changes. This implementation compiled in Windows debug CI but has not been runtime-tested.
+On Windows, Settings offers a local image picker and manual crop, an illustrative confirmation preview before saving, a profile preview after saving, and removal. The image is saved as a per-account PNG under Miugram’s local data directory, not uploaded. The editor starts with an editable, locally selected visual-detail crop; this heuristic is not face or subject recognition. The profile header then center-crops and blends that image over its normal background. Previously opened profile views must be reopened to reflect changes. An earlier version compiled in Windows debug CI; the automatic frame and before-save preview were added afterward and remain uncompiled and untested on a device.
 
 ## Experimental Windows message checks
 
