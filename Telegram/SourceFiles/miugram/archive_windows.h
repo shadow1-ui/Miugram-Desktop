@@ -50,16 +50,10 @@ public:
         return entries;
     }
     bool removeDialog(std::int64_t dialog) {
-        if (!_account || !dialog) return false;
-        const auto guard = std::lock_guard(_mutex);
-        auto entries = Read();
-        if (!entries) return false;
-        const auto before = entries->size();
-        entries->erase(std::remove_if(entries->begin(), entries->end(), [&](const auto &entry) {
-            return entry.dialog == dialog;
-        }), entries->end());
-        if (entries->size() == before) return true;
-        return entries->empty() ? Delete() : Write(*entries);
+        return RemoveMatching(dialog, 0);
+    }
+    bool removeMessage(std::int64_t dialog, std::uint32_t messageId) {
+        return messageId ? RemoveMatching(dialog, messageId) : false;
     }
     bool clear() {
         if (!_account) return false;
@@ -67,6 +61,18 @@ public:
         return Delete();
     }
 private:
+    bool RemoveMatching(std::int64_t dialog, std::uint32_t messageId) {
+        if (!_account || !dialog) return false;
+        const auto guard = std::lock_guard(_mutex);
+        auto entries = Read();
+        if (!entries) return false;
+        const auto before = entries->size();
+        entries->erase(std::remove_if(entries->begin(), entries->end(), [&](const auto &entry) {
+            return entry.dialog == dialog && (!messageId || entry.id == messageId);
+        }), entries->end());
+        if (entries->size() == before) return true;
+        return entries->empty() ? Delete() : Write(*entries);
+    }
     static constexpr std::size_t kMaxRecords = 2000;
     static constexpr std::size_t kMaxTextBytes = 16 * 1024;
     static bool Valid(const ArchivedText &r) {

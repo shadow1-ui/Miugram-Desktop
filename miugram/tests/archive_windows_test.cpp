@@ -19,6 +19,10 @@ int main() {
     const auto rows = archive.forDialog(-123);
     assert(rows && rows->size() == 1 && rows->front().text == "synthetic replacement");
     assert(!other.forDialog(-123)); // Different account cannot decrypt this file.
+    assert(archive.removeMessage(-123, 1));
+    assert(archive.forDialog(-123)->empty());
+    assert(archive.forDialog(77)->size() == 1);
+    assert(archive.put({ -123, 12, 1, 1700000000, "synthetic replacement" }, evidence));
     assert(archive.removeDialog(77));
     assert(archive.forDialog(77)->empty());
     assert(archive.forDialog(-123)->size() == 1);
