@@ -81,6 +81,23 @@ jobs:
             Remove-Item $pfx -Force -ErrorAction SilentlyContinue
           }
           Write-Output 'Self-signed candidate created. The signer is not publicly trusted and Windows may warn; no public release was created.'
+      - name: Smoke-test packaged signed candidate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $exe = Join-Path $env:GITHUB_WORKSPACE 'candidate\Miugram-Windows-CANDIDATE.exe'
+          if (-not (Test-Path $exe)) { throw 'Packaged candidate not found' }
+          $workdir = Join-Path $env:RUNNER_TEMP 'miugram-candidate-smoke'
+          New-Item -ItemType Directory -Force -Path $workdir | Out-Null
+          $process = Start-Process -FilePath $exe -ArgumentList @('-many', '-workdir', ('"' + $workdir + '"')) -PassThru
+          try {
+            Start-Sleep -Seconds 20
+            $process.Refresh()
+            if ($process.HasExited) { throw "Packaged candidate exited during startup (exit code $($process.ExitCode))" }
+            Write-Output 'Packaged signed candidate started. Login and feature tests remain unverified.'
+          } finally {
+            if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue }
+          }
       - name: Upload candidate for testing only
         uses: actions/upload-artifact@v4
         with:
