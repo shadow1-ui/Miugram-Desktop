@@ -6,6 +6,8 @@ settings = (root / 'Telegram/SourceFiles/settings/sections/settings_main.cpp').r
 top = (root / 'Telegram/SourceFiles/info/profile/info_profile_top_bar.cpp').read_text()
 strings = (root / 'Telegram/Resources/langs/lang.strings').read_text()
 assert 'tdata/miugram/profile-%1.png' in helper
+assert '.miugramProfileBackground = true' in settings
+assert 'SuggestProfileCrop(fileImage->original())' in (root / 'Telegram/SourceFiles/editor/photo_editor_layer_widget.cpp').read_text()
 assert all(x in helper for x in ('QSaveFile', 'output.commit()', 'QFile::remove', '1600'))
 assert all(x in settings for x in ('main/miugram_profile_background', 'PrepareProfilePhotoFromFile', 'SaveProfileBackground', 'RemoveProfileBackground', 'MakeMyProfile'))
 assert '_peer->isSelf() && !_savedMessages' in top

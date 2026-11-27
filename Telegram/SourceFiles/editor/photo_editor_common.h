@@ -119,6 +119,7 @@ struct EditorData {
 	bool composeAnimated = false;
 	bool composeSound = false;
 	bool hasSaveButton = false;
+	bool miugramProfileBackground = false;
 	std::optional<StoryOptions> story;
 };
 

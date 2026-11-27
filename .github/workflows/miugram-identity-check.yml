@@ -19,3 +19,7 @@ jobs:
         run: |
           g++ -std=c++17 -I. miugram/tests/ghost_policy_test.cpp -o /tmp/miugram-ghost-test
           /tmp/miugram-ghost-test
+      - name: Test automatic profile framing
+        run: |
+          g++ -std=c++17 -I. miugram/tests/auto_frame_test.cpp -o /tmp/miugram-frame-test
+          /tmp/miugram-frame-test

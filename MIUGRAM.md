@@ -40,7 +40,7 @@ The debug CI workflow reads the Telegram API ID and hash from GitHub Actions sec
 
 ## Experimental local profile background
 
-On Windows, Settings offers a local image picker and manual crop, profile preview after saving, and removal. The image is saved as a per-account PNG under Miugram’s local data directory, not uploaded. The profile header uses a center crop blended over its normal background; this is not automatic subject-aware framing. Previously opened profile views must be reopened to reflect changes. This implementation compiled in Windows debug CI but has not been runtime-tested.
+On Windows, Settings offers a local image picker and manual crop, profile preview after saving, and removal. The image is saved as a per-account PNG under Miugram’s local data directory, not uploaded. The editor starts with an editable, locally selected visual-detail crop; this heuristic is not face or subject recognition. The profile header then center-crops and blends that image over its normal background. Previously opened profile views must be reopened to reflect changes. This implementation compiled in Windows debug CI but has not been runtime-tested.
 
 ## Experimental Windows message checks
 

@@ -494,6 +494,7 @@ void BuildMiugramButtons(SectionBuilder &builder) {
 							.confirm = tr::lng_settings_save(tr::now),
 							.cropType = Editor::EditorData::CropType::Rect,
 							.keepAspectRatio = false,
+							.miugramProfileBackground = true,
 						},
 						crl::guard(controller, [=](QImage &&image) {
 							controller->showToast(Miugram::SaveProfileBackground(account, std::move(image))

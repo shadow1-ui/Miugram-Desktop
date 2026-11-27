@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "editor/photo_editor_layer_widget.h"
+#include "miugram/auto_frame_image.h"
 
 #include "editor/editor_layer_widget.h"
 #include "editor/photo_editor.h"
@@ -127,6 +128,9 @@ void PrepareProfilePhoto(
 	};
 
 	auto crop = [&] {
+		if (data.miugramProfileBackground) {
+			return Miugram::SuggestProfileCrop(fileImage->original());
+		}
 		const auto &i = fileImage;
 		const auto minSide = std::min(i->width(), i->height());
 		return QRect(
