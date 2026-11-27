@@ -56,4 +56,21 @@ jobs:
           call configure.bat x64 -D TDESKTOP_API_ID=%MIUGRAM_TELEGRAM_API_ID% -D TDESKTOP_API_HASH=%MIUGRAM_TELEGRAM_API_HASH% -D CMAKE_CONFIGURATION_TYPES=Debug -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON
           if errorlevel 1 exit /b 1
           cmake --build ..\out --config Debug --parallel 2
-      # No artifact is published: debug compilation is not a tested release.
+      - name: Launch Windows debug build in a clean directory
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $exe = Get-ChildItem "$env:TBUILD\tdesktop\out" -Filter 'Miugram.exe' -Recurse -File | Select-Object -First 1
+          if (-not $exe) { throw 'Miugram.exe was not found in the build output' }
+          $workdir = Join-Path $env:RUNNER_TEMP 'miugram-smoke'
+          New-Item -ItemType Directory -Force -Path $workdir | Out-Null
+          $process = Start-Process -FilePath $exe.FullName -ArgumentList @('-many', '-workdir', ('"' + $workdir + '"')) -PassThru
+          try {
+            Start-Sleep -Seconds 20
+            $process.Refresh()
+            if ($process.HasExited) { throw "Application exited during startup (exit code $($process.ExitCode))" }
+            Write-Output 'Startup smoke test passed. Login, feature behavior, packaging and release signing remain unverified.'
+          } finally {
+            if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue }
+          }
+      # No artifact is published: this is not a tested release.
