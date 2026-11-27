@@ -9494,6 +9494,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 "lng_miugram_profile_background" = "Local profile background";
 "lng_miugram_background_choose" = "Choose image";
+"lng_miugram_background_confirm" = "Preview background before saving";
 "lng_miugram_background_preview" = "Preview profile";
 "lng_miugram_background_remove" = "Remove";
 "lng_miugram_background_saved" = "Background saved locally. Open your profile to preview.";

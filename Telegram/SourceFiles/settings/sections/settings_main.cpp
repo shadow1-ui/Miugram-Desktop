@@ -95,6 +95,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include <QtGui/QClipboard>
 #include <QtGui/QGuiApplication>
+#include <QtGui/QPainter>
+#include <memory>
 #include <QtGui/QWindow>
 
 #include "styles/style_chat_helpers.h"
@@ -497,9 +499,45 @@ void BuildMiugramButtons(SectionBuilder &builder) {
 							.miugramProfileBackground = true,
 						},
 						crl::guard(controller, [=](QImage &&image) {
-							controller->showToast(Miugram::SaveProfileBackground(account, std::move(image))
-								? tr::lng_miugram_background_saved(tr::now)
-								: tr::lng_miugram_background_failed(tr::now));
+							if (image.isNull()) {
+								controller->showToast(tr::lng_miugram_background_failed(tr::now));
+								return;
+							}
+							// The picture stays local and the previous background stays intact
+							// until the user confirms this illustrative preview.
+							const auto chosen = std::make_shared<QImage>(std::move(image));
+							const auto name = session->user()->name();
+							base::call_delayed(0, crl::guard(controller, [=] {
+								controller->show(Box([=](not_null<Ui::GenericBox*> confirm) {
+								confirm->setTitle(tr::lng_miugram_background_confirm());
+								const auto preview = confirm->addRow(
+									object_ptr<Ui::FixedHeightWidget>(confirm, 200));
+								preview->paintRequest() | rpl::on_next([=] {
+									auto p = QPainter(preview);
+									p.setRenderHint(QPainter::SmoothPixmapTransform);
+									const auto target = QRectF(preview->rect());
+									const auto scale = std::max(target.width() / chosen->width(),
+										target.height() / chosen->height());
+									if (scale <= 0) return;
+									const auto w = target.width() / scale;
+									const auto h = target.height() / scale;
+									const auto source = QRectF((chosen->width() - w) / 2,
+										(chosen->height() - h) / 2, w, h);
+									p.drawImage(target, *chosen, source);
+									p.fillRect(target, QColor(0, 0, 0, 100));
+									p.setPen(Qt::white);
+									p.drawText(preview->rect().adjusted(16, 0, -16, -12),
+										Qt::AlignLeft | Qt::AlignBottom | Qt::TextSingleLine, name);
+								}, preview->lifetime());
+								confirm->addButton(tr::lng_settings_save(), [=] {
+									const auto ok = Miugram::SaveProfileBackground(account, *chosen);
+									confirm->closeBox();
+									controller->showToast(ok ? tr::lng_miugram_background_saved(tr::now)
+										: tr::lng_miugram_background_failed(tr::now));
+								});
+								confirm->addButton(tr::lng_cancel(), [=] { confirm->closeBox(); });
+								}));
+							}));
 						}));
 				});
 				box->addButton(tr::lng_miugram_background_preview(), [=] {

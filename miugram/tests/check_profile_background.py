@@ -10,7 +10,9 @@ assert '.miugramProfileBackground = true' in settings
 assert 'SuggestProfileCrop(fileImage->original())' in (root / 'Telegram/SourceFiles/editor/photo_editor_layer_widget.cpp').read_text()
 assert all(x in helper for x in ('QSaveFile', 'output.commit()', 'QFile::remove', '1600'))
 assert all(x in settings for x in ('main/miugram_profile_background', 'PrepareProfilePhotoFromFile', 'SaveProfileBackground', 'RemoveProfileBackground', 'MakeMyProfile'))
+assert 'lng_miugram_background_confirm' in settings
+assert settings.index('confirm->addButton(tr::lng_settings_save()') < settings.index('SaveProfileBackground(account, *chosen)')
 assert '_peer->isSelf() && !_savedMessages' in top
 assert 'LoadProfileBackground(_peer->session().userId().bare)' in top
-assert all(('"lng_miugram_background_' + x + '"') in strings for x in ('choose', 'preview', 'remove', 'saved', 'removed', 'failed'))
+assert all(('"lng_miugram_background_' + x + '"') in strings for x in ('choose', 'confirm', 'preview', 'remove', 'saved', 'removed', 'failed'))
 print('Profile-background integration checks passed (not a compile or UI test).')
