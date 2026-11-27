@@ -23,3 +23,7 @@ jobs:
         run: |
           g++ -std=c++17 -I. miugram/tests/auto_frame_test.cpp -o /tmp/miugram-frame-test
           /tmp/miugram-frame-test
+      - name: Test fail-closed archive policy
+        run: |
+          g++ -std=c++17 -I. miugram/tests/archive_policy_test.cpp -o /tmp/miugram-archive-policy-test
+          /tmp/miugram-archive-policy-test
