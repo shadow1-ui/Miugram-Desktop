@@ -6,6 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_session.h"
+#ifdef Q_OS_WIN
+#include "miugram/archive_candidate_windows.h" // Compiled preparation; not connected to deletion handling.
+#endif
 
 #include "api/api_bot.h"
 #include "api/api_premium.h"
