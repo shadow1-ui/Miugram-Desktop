@@ -28,15 +28,35 @@ public:
     : _path(std::move(path)), _account(account) {}
 
     bool put(const ArchivedText &record, const ArchiveEvidence &evidence) {
-        if (!MayRetainText(evidence) || !_account || !Valid(record)) return false;
+        return putBatch({ { record, evidence } });
+    }
+    // All evidence is checked before modifying storage; one DPAPI transaction
+    // covers the entire deletion update. Caller must revalidate live policy.
+    bool putBatch(const std::vector<std::pair<ArchivedText, ArchiveEvidence>> &batch) {
+        if (!_account) return false;
+        for (const auto &[record, evidence] : batch) {
+            if (!MayRetainText(evidence) || !Valid(record)) return false;
+        }
+        if (batch.empty()) return true;
         const auto guard = std::lock_guard(_mutex);
         auto entries = Read();
         if (!entries) return false; // Never replace an unreadable/corrupt archive.
-        entries->erase(std::remove_if(entries->begin(), entries->end(), [&](const auto &old) {
-            return old.dialog == record.dialog && old.id == record.id;
-        }), entries->end());
-        if (entries->size() >= kMaxRecords) return false;
-        entries->push_back(record);
+        for (const auto &[record, evidence] : batch) {
+            entries->erase(std::remove_if(entries->begin(), entries->end(), [&](const auto &old) {
+                return old.dialog == record.dialog && old.id == record.id;
+            }), entries->end());
+            entries->push_back(record);
+        }
+        // Keep the most recent records within the count and serialized byte limits.
+        // Header is 8 bytes; each record has 28 bytes of fixed-width fields.
+        std::size_t first = entries->size(), bytes = 8;
+        while (first > 0 && entries->size() - first < kMaxRecords) {
+            const auto itemBytes = std::size_t(28) + (*entries)[first - 1].text.size();
+            if (itemBytes > kArchiveMaxPlaintext - bytes) break;
+            bytes += itemBytes;
+            --first;
+        }
+        entries->erase(entries->begin(), entries->begin() + first);
         return Write(*entries);
     }
     std::optional<std::vector<ArchivedText>> forDialog(std::int64_t dialog, const ArchiveEvidence &evidence) const {

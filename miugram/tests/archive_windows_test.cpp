@@ -45,5 +45,27 @@ int main() {
     assert(!archive.put(first, evidence)); // A damaged archive must not be silently replaced.
     assert(archive.clear());
     assert(archive.forDialog(-123, evidence)->empty());
+    // A rejected member must not partially commit the rest of the batch.
+    auto bad = evidence; bad.peerProtected = true;
+    assert(!archive.putBatch({ { first, evidence }, { { -123, 12, 2, 1700000000, "protected" }, bad } }));
+    assert(archive.forDialog(-123, evidence)->empty());
+    std::vector<std::pair<Miugram::ArchivedText, Miugram::ArchiveEvidence>> batch;
+    for (std::uint32_t i = 1; i <= 2010; ++i) {
+        batch.push_back({ { -123, 12, i, 1700000000, "short" }, evidence });
+    }
+    assert(archive.putBatch(batch));
+    const auto boundedCount = archive.forDialog(-123, evidence);
+    assert(boundedCount && boundedCount->size() == 2000);
+    assert(boundedCount->front().id == 11 && boundedCount->back().id == 2010);
+    assert(archive.clear());
+    batch.clear();
+    for (std::uint32_t i = 1; i <= 300; ++i) {
+        batch.push_back({ { -123, 12, i, 1700000000, std::string(16000, 'x') }, evidence });
+    }
+    assert(archive.putBatch(batch));
+    const auto boundedBytes = archive.forDialog(-123, evidence);
+    assert(boundedBytes && !boundedBytes->empty() && boundedBytes->size() < 300);
+    assert(boundedBytes->front().id > 1 && boundedBytes->back().id == 300);
+    assert(archive.clear());
     std::cout << "Synthetic protected storage, account isolation and cleanup passed.\n";
 }
