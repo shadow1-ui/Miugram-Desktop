@@ -18,3 +18,8 @@ jobs:
         run: |
           cl /nologo /EHsc /std:c++17 /I. miugram\tests\archive_dpapi_test.cpp crypt32.lib /Fe:archive-dpapi-test.exe
           archive-dpapi-test.exe
+      - name: Test Windows local archive storage
+        shell: cmd
+        run: |
+          cl /nologo /EHsc /std:c++17 /I. miugram\tests\archive_windows_test.cpp crypt32.lib /Fe:archive-storage-test.exe
+          archive-storage-test.exe
