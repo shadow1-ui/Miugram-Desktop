@@ -42,3 +42,9 @@ assert 'SLGP_RAWPATH' in win and 'Qt::CaseInsensitive' in win
 assert 'SetIconLocation' in win and 'SHCNE_UPDATEITEM' in win
 assert 'Platform::SetMiugramShortcutIcon(group->current())' in settings
 print('Desktop shortcut icon integration statically checked (Windows runtime unverified).')
+
+assert 'class MiugramSettings final : public Section<MiugramSettings>' in settings
+assert '.targetSection = MiugramSettingsId()' in settings
+assert 'BuildMiugramButtons(builder);' in settings
+assert '.parentId = MainId()' in settings
+print('Dedicated Miugram settings navigation statically checked (Windows runtime unverified).')

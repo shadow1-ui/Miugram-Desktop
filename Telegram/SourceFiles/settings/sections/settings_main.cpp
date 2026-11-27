@@ -369,14 +369,15 @@ void Cover::refreshQrButtonGeometry(int newWidth) {
 	_qrButton->moveToRight(buttonRight - inset, buttonTop, newWidth);
 }
 
-void BuildSectionButtons(SectionBuilder &builder) {
+Type MiugramSettingsId();
+
+void BuildMiugramButtons(SectionBuilder &builder) {
 	const auto session = builder.session();
 	const auto controller = builder.controller();
-	const auto showOther = builder.showOther();
 
 	builder.addButton({
 		.id = u"main/miugram"_q,
-		.title = rpl::single(u"Miugram"_q),
+		.title = tr::lng_miugram_account_data(),
 		.icon = { &st::menuIconProfile },
 		.onClick = [=] {
 			const auto id = session->userId().bare;
@@ -516,6 +517,20 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		.keywords = { u"miugram"_q, u"profile"_q, u"background"_q },
 	});
 #endif // Q_OS_WIN
+
+}
+
+void BuildSectionButtons(SectionBuilder &builder) {
+	const auto session = builder.session();
+	const auto controller = builder.controller();
+	const auto showOther = builder.showOther();
+
+	builder.addSectionButton({
+		.title = tr::lng_miugram_settings(),
+		.targetSection = MiugramSettingsId(),
+		.icon = { &st::menuIconProfile },
+		.keywords = { u"miugram"_q, u"ghost"_q, u"appearance"_q },
+	});
 
 	if (!session->supportMode()) {
 		builder.addButton({
@@ -813,6 +828,49 @@ void BuildValidationSuggestions(SectionBuilder &builder) {
 		return SectionBuilder::WidgetToAdd{ .widget = std::move(wrap) };
 	});
 }
+
+class MiugramSettings final : public Section<MiugramSettings> {
+public:
+	MiugramSettings(QWidget *parent, not_null<Window::SessionController*> controller)
+	: Section(parent, controller) {
+		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
+		const SectionBuildMethod method = [](
+				not_null<Ui::VerticalLayout*> container,
+				not_null<Window::SessionController*> controller,
+				Fn<void(Type)> showOther,
+				rpl::producer<>) {
+			const auto isPaused = Window::PausedIn(controller, Window::GifPauseReason::Layer);
+			auto builder = SectionBuilder(WidgetContext{
+				.container = container,
+				.controller = controller,
+				.showOther = std::move(showOther),
+				.isPaused = isPaused,
+			});
+			builder.addSkip();
+			BuildMiugramButtons(builder);
+			builder.addSkip();
+		};
+		build(content, method);
+		Ui::ResizeFitChild(this, content);
+	}
+
+	[[nodiscard]] rpl::producer<QString> title() override {
+		return tr::lng_miugram_settings();
+	}
+};
+
+Type MiugramSettingsId() {
+	return MiugramSettings::Id();
+}
+
+const auto kMiugramMeta = BuildHelper({
+	.id = MiugramSettingsId(),
+	.parentId = MainId(),
+	.title = &tr::lng_miugram_settings,
+	.icon = &st::menuIconProfile,
+}, [](SectionBuilder &builder) {
+	BuildMiugramButtons(builder);
+});
 
 class Main final : public Section<Main> {
 public:
