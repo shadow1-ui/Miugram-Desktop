@@ -13,6 +13,11 @@ struct ArchiveEvidence {
     bool hasExpiry = true;
     bool ordinaryTextOnly = false;
 };
+// Check the current chat policy again before exposing existing snapshots.
+constexpr bool MayDisplayArchive(const ArchiveEvidence &e) {
+    return e.optedIn && e.ordinaryCloudChat && e.peerPolicyKnown
+        && !e.peerProtected && !e.hasExpiry;
+}
 constexpr bool MayRetainText(const ArchiveEvidence &e) {
     return e.optedIn && e.serverDeletion && e.incoming && e.ordinaryCloudChat
         && e.peerPolicyKnown && !e.peerProtected && !e.messageProtected

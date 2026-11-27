@@ -3,6 +3,15 @@
 #include <iostream>
 int main() {
     assert(!Miugram::MayRetainText({}));
+    auto display = Miugram::ArchiveEvidence{};
+    assert(!Miugram::MayDisplayArchive(display));
+    display.optedIn = display.ordinaryCloudChat = display.peerPolicyKnown = true;
+    display.peerProtected = display.hasExpiry = false;
+    assert(Miugram::MayDisplayArchive(display));
+    display.peerProtected = true;
+    assert(!Miugram::MayDisplayArchive(display));
+    display.peerProtected = false; display.hasExpiry = true;
+    assert(!Miugram::MayDisplayArchive(display));
     int permitted = 0;
     for (int bits = 0; bits < (1 << 9); ++bits) {
         bool b[9];

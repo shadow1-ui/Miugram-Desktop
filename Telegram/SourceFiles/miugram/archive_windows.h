@@ -39,8 +39,8 @@ public:
         entries->push_back(record);
         return Write(*entries);
     }
-    std::optional<std::vector<ArchivedText>> forDialog(std::int64_t dialog) const {
-        if (!_account || !dialog) return std::nullopt;
+    std::optional<std::vector<ArchivedText>> forDialog(std::int64_t dialog, const ArchiveEvidence &evidence) const {
+        if (!_account || !dialog || !MayDisplayArchive(evidence)) return std::nullopt;
         const auto guard = std::lock_guard(_mutex);
         auto entries = Read();
         if (!entries) return std::nullopt;
