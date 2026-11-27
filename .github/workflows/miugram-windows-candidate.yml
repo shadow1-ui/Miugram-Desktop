@@ -1,0 +1,86 @@
+name: Miugram Windows signed candidate (not a release)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    name: Build and self-sign a Windows candidate for testing
+    runs-on: windows-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          path: TBuild/tdesktop
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Prepare directories
+        shell: cmd
+        run: |
+          if not exist "%GITHUB_WORKSPACE%\TBuild\Libraries" mkdir "%GITHUB_WORKSPACE%\TBuild\Libraries"
+          echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
+          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
+      - uses: Eden-CI/msvc-dev-cmd@1bd71f95d6f3d1b2b3395b335cc63bcdc90cf223
+        with:
+          arch: x64
+          sdk: 10.0.26100.0
+          toolset: '14.44'
+      - name: Build third-party release libraries
+        shell: cmd
+        run: call "%TBUILD%\tdesktop\Telegram\build\prepare\win.bat" skip-debug silent
+      - name: Configure and build release candidate
+        shell: cmd
+        env:
+          MIUGRAM_TELEGRAM_API_ID: ${{ secrets.MIUGRAM_TELEGRAM_API_ID }}
+          MIUGRAM_TELEGRAM_API_HASH: ${{ secrets.MIUGRAM_TELEGRAM_API_HASH }}
+        run: |
+          if not defined MIUGRAM_TELEGRAM_API_ID exit /b 1
+          if not defined MIUGRAM_TELEGRAM_API_HASH exit /b 1
+          cd /d "%TBUILD%\tdesktop\Telegram"
+          call configure.bat x64 -D TDESKTOP_API_ID=%MIUGRAM_TELEGRAM_API_ID% -D TDESKTOP_API_HASH=%MIUGRAM_TELEGRAM_API_HASH% -D CMAKE_CONFIGURATION_TYPES=Release -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON
+          if errorlevel 1 exit /b 1
+          cmake --build ..\out --config Release --parallel 2
+      - name: Sign and verify candidate
+        shell: pwsh
+        env:
+          MIUGRAM_WINDOWS_CERTIFICATE_B64: ${{ secrets.MIUGRAM_WINDOWS_CERTIFICATE_B64 }}
+          MIUGRAM_WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.MIUGRAM_WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:MIUGRAM_WINDOWS_CERTIFICATE_B64 -or -not $env:MIUGRAM_WINDOWS_CERTIFICATE_PASSWORD) { throw 'Missing signing configuration' }
+          $exe = Get-ChildItem "$env:TBUILD\tdesktop\out" -Filter 'Miugram.exe' -Recurse -File | Select-Object -First 1
+          if (-not $exe) { throw 'Miugram.exe was not found' }
+          $signtool = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe'
+          if (-not (Test-Path $signtool)) { throw 'Windows SDK SignTool not found' }
+          $pfx = Join-Path $env:RUNNER_TEMP 'miugram-windows-signing.p12'
+          try {
+            [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:MIUGRAM_WINDOWS_CERTIFICATE_B64))
+            & $signtool sign /fd SHA256 /f $pfx /p $env:MIUGRAM_WINDOWS_CERTIFICATE_PASSWORD $exe.FullName
+            if ($LASTEXITCODE -ne 0) { throw 'Signing failed' }
+            $sig = Get-AuthenticodeSignature -FilePath $exe.FullName
+            if (-not $sig.SignerCertificate) { throw 'No signer certificate in candidate' }
+            $digest = $sig.SignerCertificate.GetCertHashString([System.Security.Cryptography.HashAlgorithmName]::SHA256)
+            if ($digest -ne 'C12AB437CA2398067158D4A002AAD8AF51E78B18950B16F3297B654B41178209') { throw 'Unexpected signing certificate' }
+            if ($sig.Status -notin @('Valid', 'NotTrusted')) { throw "Signature verification failed: $($sig.Status)" }
+            $candidate = Join-Path $env:GITHUB_WORKSPACE 'candidate'
+            New-Item -ItemType Directory -Force -Path $candidate | Out-Null
+            Copy-Item $exe.FullName (Join-Path $candidate 'Miugram-Windows-CANDIDATE.exe')
+            $modules = Join-Path $exe.DirectoryName 'modules'
+            if (Test-Path $modules) { Copy-Item $modules $candidate -Recurse }
+            Get-FileHash (Join-Path $candidate 'Miugram-Windows-CANDIDATE.exe') -Algorithm SHA256 | Format-List | Out-File (Join-Path $candidate 'SHA256.txt')
+          } finally {
+            Remove-Item $pfx -Force -ErrorAction SilentlyContinue
+          }
+          Write-Output 'Self-signed candidate created. The signer is not publicly trusted and Windows may warn; no public release was created.'
+      - name: Upload candidate for testing only
+        uses: actions/upload-artifact@v4
+        with:
+          name: miugram-windows-untested-candidate
+          path: candidate/
+          if-no-files-found: error
+          retention-days: 7
