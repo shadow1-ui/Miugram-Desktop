@@ -32,7 +32,7 @@ jobs:
           toolset: '14.44'
       - name: Build third-party release libraries
         shell: cmd
-        run: call "%TBUILD%\tdesktop\Telegram\build\prepare\win.bat" skip-debug silent
+        run: call "%TBUILD%\tdesktop\Telegram\build\prepare\win.bat" silent
       - name: Configure and build release candidate
         shell: cmd
         env:
