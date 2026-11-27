@@ -5,6 +5,7 @@
 #include "data/data_peer.h"
 #include "history/history.h"
 #include "history/history_item.h"
+#include "history/history_item_components.h"
 #include <QtCore/QByteArray>
 #include <optional>
 
@@ -27,7 +28,8 @@ inline std::optional<ArchivedText> CandidateFromServerDeletion(
     evidence.hasExpiry = peer->messagesTTL() != 0 || item->ttlDestroyAt() != 0;
     // Rich text is excluded until entities (including spoilers) can be retained safely.
     evidence.ordinaryTextOnly = item->isHistoryEntry() && !item->isLocal() && !item->isService()
-        && !item->isScheduled() && !item->isSponsored() && !item->media() && !body.text.isEmpty() && body.entities.empty();
+        && !item->isScheduled() && !item->isSponsored() && !item->media()
+        && !item->Has<HistoryMessageForwarded>() && !body.text.isEmpty() && body.entities.empty();
     if (!MayRetainText(evidence) || item->id.bare <= 0 || item->date() <= 0) return std::nullopt;
     const auto utf8 = body.text.toUtf8();
     if (utf8.isEmpty() || utf8.size() > 16 * 1024) return std::nullopt;

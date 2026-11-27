@@ -31,6 +31,10 @@ jobs:
           sdk: 10.0.26100.0
           toolset: '14.44'
       - name: Build third-party release libraries
+        # dump_syms requires ATL, absent on this runner; it is not needed for this
+        # test candidate. Crash-symbol generation remains a release concern.
+        env:
+          SKIP_DUMPSYMS: "1"
         shell: cmd
         run: call "%TBUILD%\tdesktop\Telegram\build\prepare\win.bat" silent
       - name: Configure and build release candidate
